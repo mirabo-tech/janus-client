@@ -247,7 +247,9 @@ class VideoRoomHandle extends PluginHandle {
         return new Promise((resolve, reject)=>{
             // assert.property(options, 'room');
             // assert.property(options, 'jsep');
-            options.room = parseInt(options.room + "");
+            if (options.room) {
+                options.room = parseInt(options.room + "");
+            }
             let message = _.merge({
                 request: 'start'
             }, options);
