@@ -66,6 +66,11 @@ class Client {
         this.connectionTimeout = options.connectionTimeout || 40000;
         this.lastConnectionEvent = ClientEvent.disconnected;
         this.sessions = {};
+        this.sessionOpt = _.get(options, 'sessionOpt', {
+            keepAliveInterval: 30000,
+            keepAliveFails: 2,
+            keepAliveFailCount: 0
+        })
         this.hasInfo = false;
         this.info = {};
         this.reconnect = _.isBoolean(options.reconnect)? options.reconnect : true;
@@ -294,7 +299,7 @@ class Client {
         return new Promise((resolve, reject)=>{
             this.request({ janus: 'create' }).then((res)=>{
                 if(res.isSuccess()) {
-                    let session = new Session(res.getResponse().data.id, this);
+                    let session = new Session(res.getResponse().data.id, this, this.sessionOpt);
                     this.addSession(session);
                     this.logger.info('Created session=%s',session.getId());
                     session.onKeepAlive((result)=>{
@@ -325,7 +330,7 @@ class Client {
                 session_id: sessionId
             }).then((res)=>{
                 if(res.isSuccess()) {
-                    let session = new Session(res.getResponse().session_id, this);
+                    let session = new Session(res.getResponse().session_id, this, this.sessionOpt);
                     this.addSession(session);
                     this.logger.info('Claimed session=%s',session.getId());
                     session.onKeepAlive((result)=>{

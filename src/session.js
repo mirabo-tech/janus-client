@@ -16,13 +16,14 @@ const State = {
  */
 class Session {
 
-    constructor(id, janus) {
+    constructor(id, janus, options) {
+        options = options || {};
         this.id = id;
         this.janus = janus;
         this.keepAliveTimer = null;
-        this.keepAliveInterval = 30000;
-        this.keepAliveFails = 2;
-        this.keepAliveFailCount = 0;
+        this.keepAliveInterval = options.keepAliveInterval || 30000;
+        this.keepAliveFails = options.keepAliveFails || 2;
+        this.keepAliveFailCount = options.keepAliveFailCount || 0;
         this.emitter = new EventEmitter();
         this.state = (this.janus.isConnected()) ? State.alive : State.dead;
         this.startKeepAlive();
